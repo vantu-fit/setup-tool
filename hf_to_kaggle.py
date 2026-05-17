@@ -99,6 +99,7 @@ if __name__ == "__main__":
     parser.add_argument("--datasets", nargs="*", default=[], help="List of Hugging Face dataset repo IDs (separated by space)")
     parser.add_argument("--name", help="Name for the Kaggle dataset. If not provided, it will use the name of the first downloaded repo.")
     parser.add_argument("--dir", default="./temp_download", help="Temporary directory to store downloaded data")
+    parser.add_argument("--no-cleanup", action="store_true", help="If set, do not delete the temporary downloaded files after uploading")
     
     args = parser.parse_args()
     
@@ -136,6 +137,10 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n[X] An error occurred: {e}")
     finally:
-        print("\n=== CLEANING UP TEMPORARY DATA ===")
-        shutil.rmtree(args.dir, ignore_errors=True)
-        print("Cleanup complete. Script finished.")
+        if not args.no_cleanup:
+            print("\n=== CLEANING UP TEMPORARY DATA ===")
+            shutil.rmtree(args.dir, ignore_errors=True)
+            print("Cleanup complete. Script finished.")
+        else:
+            print(f"\n=== SKIPPING CLEANUP. DATA SAVED IN '{args.dir}' ===")
+            print("Script finished.")
