@@ -68,12 +68,14 @@ def upload_to_kaggle(local_dir, dataset_name):
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
         )
         
+        output_log = ""
         for line in process.stdout:
             print(line, end="")
+            output_log += line
             
         process.wait()
         
-        if process.returncode != 0:
+        if process.returncode != 0 or "error" in output_log.lower() or "already in use" in output_log.lower() or "already exists" in output_log.lower():
             print("\n[-] Dataset creation failed (Maybe the dataset already exists). Proceeding to sync/update new version...")
             update_process = subprocess.Popen(
                 ["kaggle", "datasets", "version", "-p", local_dir, "-m", "Sync multiple models/datasets via script", "-r", "tar"],
